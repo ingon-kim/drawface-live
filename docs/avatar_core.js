@@ -687,9 +687,12 @@ window.AvatarCore = (() => {
   // ---------- 감정 결정 + 발화 (puppet·studio3d 공용) ----------
   // emotion 지정(LLM 판단) 있으면 그대로, 없으면 LLM 분류 → 실패 시 규칙 추론. autoEmo(호출 시점 boolean) 켜져 있으면
   // emo(makeEmotion 인스턴스) 프리셋 + 목소리 톤 적용 후 speakFlow. voice/engine 은 호출 시점 값.
-  async function speakWithEmotion({ text, emotion, autoEmo, emo, voice, engine, audioEl, onAnim }) {
+  // intensity/sticky 는 emotion 이 있을 때만 쓴다 — 호출부가 수동 버튼(1·고정)과 명시 감정
+  // (0.9·감쇠)을 구분해 넘긴다. 영상 경로(puppet speakVideo)와 같은 규칙이어야 한다.
+  async function speakWithEmotion({ text, emotion, intensity = 0.9, sticky = false,
+                                    autoEmo, emo, voice, engine, audioEl, onAnim }) {
     let segs = null;
-    let r = emotion ? { emo: emotion, intensity: 0.9 } : null;
+    let r = emotion ? { emo: emotion, intensity } : null;
     if (!r && autoEmo) {
       // 직렬 호출: 목소리 톤(prosody)이 TTS 요청 파라미터라 감정을 먼저 알아야 한다.
       segs = await classifyEmotion(text);
@@ -698,8 +701,11 @@ window.AvatarCore = (() => {
       r = inferEmotion(text);
     }
     let prosody = null;
-    if (r && autoEmo) {
-      emo.setEmotion(r.emo, r.intensity, false);   // 자동 감정 — 발화 끝나면 중립 복귀
+    // 명시 감정(대화 모드 LLM·클릭 반응)은 autoEmo 와 무관하게 적용한다 — 예전엔 autoEmo 가
+    // 꺼져 있으면 넘어온 emotion 까지 무시돼 표정·목소리 톤이 둘 다 사라졌다.
+    if (r && (autoEmo || emotion)) {
+      // 자동 판정은 발화가 끝나면 중립 복귀(sticky=false). 수동 버튼만 고정으로 넘어온다.
+      emo.setEmotion(r.emo, r.intensity, sticky);
       prosody = voiceProsody(r.emo, r.intensity);
     }
     const anim = await speakFlow({ text, voice, engine, audioEl, onAnim, prosody });
@@ -1492,9 +1498,17 @@ window.AvatarCore = (() => {
         addTurn(botName, reply, "bot");
         statusSet("말하는 중…");
         await speak(reply, emotion);
-        // speak 는 재생 시작 시점에 반환 — 연속 대화면 재생이 실제로 끝날 때까지 대기 후 재청취
-        if (handsFree && audioEl && !audioEl.paused && !audioEl.ended)
-          await new Promise(res => audioEl.addEventListener("ended", res, { once: true }));
+        // speak 는 재생 시작 시점에 반환 — 연속 대화면 재생이 실제로 끝날 때까지 대기 후 재청취.
+        // 주입된 audioEl 만 보면 안 된다 — 영상 경로는 오디오가 mp4 안에 있어 <video> 로 나가고
+        // <audio> 는 멈춘 채라 대기가 통째로 스킵됐다(= 영상이 말하는 중에 마이크가 열림).
+        // 그래서 지금 실제로 재생 중인 매체를 찾아 그걸 기다린다. audioEl 우선 — 실시간 경로는 종전과 동일.
+        const playing = [audioEl, ...document.querySelectorAll("audio, video")]
+          .find(el => el && !el.paused && !el.ended);
+        // ended 만 기다리면 영구히 걸린다 — 스트리밍 mp4 는 캐릭터 전환(pause)·스트림 끊김(error)으로도
+        // 끝난다. 그 경우 busy 가 안 풀려 마이크가 영영 안 열린다. 버퍼링 중엔 waiting 이라 안 깨진다.
+        if (handsFree && playing)
+          await new Promise(res => ["ended", "pause", "error"]
+            .forEach(ev => playing.addEventListener(ev, res, { once: true })));
       } finally {
         busy = false;
         if (handsFree && mic) { statusSet(""); mic.start(); }
