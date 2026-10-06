@@ -41,7 +41,7 @@
 5. **방송·회의에 쓰기** — `?clean=1` 로 배경 투명 · OBS 브라우저 소스 ([아래](#obs--방송회의에-쓰기-클린-모드))
 
 > 웹 UI 는 영문입니다 — 데모가 Hugging Face Space 로 공개되면서 방문자 기준을 국제 사용자로
-> 맞췄습니다. 같은 `docs/` 가 [GitHub Pages 미러](https://ingon1026.github.io/drawface-live/)로도
+> 맞췄습니다. 같은 `docs/` 가 [GitHub Pages 미러](https://ingon-kim.github.io/drawface-live/)로도
 > 자동 배포되므로 기존 북마크·OBS 설정은 그대로 동작합니다.
 
 ## OBS / 방송·회의에 쓰기 (클린 모드)
@@ -295,12 +295,12 @@ usbipd attach --wsl --busid 2-1    # 그 순간 WSL 에 /dev/video0~5 생성
 | 대상 | 주소 | 배포 |
 | --- | --- | --- |
 | Hugging Face Space (대표) | https://ingon1-drawface-live.static.hf.space/ | `.github/workflows/hf-space.yml` — 업로드 후 실제 URL 이 200 인지까지 확인 |
-| GitHub Pages (미러) | https://ingon1026.github.io/drawface-live/ | Pages 기본 배포 + 배포된 실물을 검사하는 스모크 테스트 |
+| GitHub Pages (미러) | https://ingon-kim.github.io/drawface-live/ | Pages 기본 배포 + 배포된 실물을 검사하는 스모크 테스트 |
 
 매 푸시마다 도는 검사: Python 테스트 · JS 문법 · 자산 버전 일관성 · 벤더 패치 적용 가능 여부
 (`apply_vendor_patches.sh --check`) · 온보딩 E2E(`npm run test:e2e`, 실제 Chromium).
 공용 렌더 코어 [`docs/avatar_core.js`](docs/avatar_core.js) 는
-[talking-drawing-avatar](https://github.com/ingon1026/talking-drawing-avatar) 의 벤더 사본이라
+[talking-drawing-avatar](https://github.com/ingon-kim/talking-drawing-avatar) 의 벤더 사본이라
 전용 워크플로가 푸시마다 + 매일 원본과 대조합니다 (`scripts/sync_avatar_core.sh --check`).
 웹 JS/CSS를 배포할 때는 `scripts/bump_web_asset_version.sh <버전>` 으로 캐시 버전을 함께 올립니다.
 

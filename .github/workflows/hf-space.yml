@@ -68,7 +68,7 @@ jobs:
             That track needs a local GPU (TensorRT), so it cannot run here — the page shows
             measured results instead, including the artwork it fails on.
 
-          Source and technical notes: https://github.com/ingon1026/drawface-live
+          Source and technical notes: https://github.com/ingon-kim/drawface-live
           EOF
 
       - name: hf CLI 설치

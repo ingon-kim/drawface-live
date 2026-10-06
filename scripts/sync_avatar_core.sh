@@ -13,7 +13,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VENDORED="$ROOT/docs/avatar_core.js"
 LOCAL_UPSTREAM="${AVATAR_CORE_UPSTREAM:-$HOME/face/static/avatar_core.js}"
-RAW_URL="https://raw.githubusercontent.com/ingon1026/talking-drawing-avatar/main/static/avatar_core.js"
+RAW_URL="https://raw.githubusercontent.com/ingon-kim/talking-drawing-avatar/main/static/avatar_core.js"
 
 # 첫 주석 블록(' */' 로 끝나는 줄)까지가 헤더, 그 다음부터가 본문.
 body() { awk 'f { print } /^ \*\//  { f = 1 }' "$1"; }

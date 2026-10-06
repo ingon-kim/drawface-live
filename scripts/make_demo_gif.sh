@@ -7,7 +7,7 @@ set -euo pipefail
 
 IN="${1:?usage: make_demo_gif.sh <input.webm> [out.gif] [caption]}"
 OUT="${2:-docs/img/demo.gif}"
-CAPTION="${3:-웹캠 표정으로 실시간 구동  ·  ingon1026.github.io/drawface-live}"
+CAPTION="${3:-웹캠 표정으로 실시간 구동  ·  ingon-kim.github.io/drawface-live}"
 FPS=15
 WIDTH=420
 TMP="$(mktemp -d)"

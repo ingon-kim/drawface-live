@@ -30,7 +30,7 @@ gets from `scipy.spatial.Delaunay`.
 
 | Field | Value |
 | --- | --- |
-| Upstream URL | https://github.com/ingon1026/talking-drawing-avatar |
+| Upstream URL | https://github.com/ingon-kim/talking-drawing-avatar |
 | Upstream path | `static/avatar_core.js` |
 | Vendored at | `docs/avatar_core.js` — consumed by `index.html` (mirroring studio) |
 | License | same author, both repos |
